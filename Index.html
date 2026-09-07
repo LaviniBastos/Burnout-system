@@ -1,0 +1,1100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copiloto MindLearning</title>
+<style>
+  :root{
+    --creme:#faf6ef;
+    --creme-2:#f3ece0;
+    --tinta:#141414;
+    --tinta-60:rgba(20,20,20,.62);
+    --tinta-40:rgba(20,20,20,.42);
+    --linha:rgba(20,20,20,.13);
+    --azul:#0f2942;
+    --teal:#1f7a8c;
+    --coral:#e76f51;
+    --papel:#fffdf9;
+    --raio:10px;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--creme);
+    color:var(--tinta);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.5;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 18px 56px}
+
+  /* ---------- topo ---------- */
+  .topo{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
+        padding-bottom:16px;border-bottom:1px solid var(--linha);margin-bottom:22px}
+  .marca{display:flex;gap:12px;align-items:center}
+  .selo{width:38px;height:38px;flex:0 0 38px;border-radius:9px;background:var(--azul);color:#fff;
+        display:grid;place-items:center;font-weight:700;font-size:13px;letter-spacing:.04em}
+  .marca h1{margin:0;font-size:19px;letter-spacing:-.015em;font-weight:700}
+  .marca p{margin:2px 0 0;font-size:12.5px;color:var(--tinta-60);max-width:46ch}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;
+        letter-spacing:.07em;text-transform:uppercase;padding:5px 10px;border-radius:999px;
+        border:1px solid var(--linha);color:var(--tinta-60);background:var(--papel)}
+  .chip b{font-weight:700}
+
+  /* ---------- blocos ---------- */
+  .rotulo{font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-40)}
+  section{margin-bottom:20px}
+  h2{font-size:15px;margin:0 0 3px;letter-spacing:-.01em}
+  .sub{font-size:12.5px;color:var(--tinta-60);margin:0 0 14px;max-width:70ch}
+  .cartao{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);padding:18px}
+  .console{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:16px;align-items:start}
+  .duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+
+  /* ---------- controles ---------- */
+  .pilar{padding:14px 0;border-top:1px solid var(--linha)}
+  .pilar:first-of-type{border-top:0;padding-top:6px}
+  .pilar > .rotulo{display:block;margin-bottom:10px}
+  .campo{margin:0 0 14px}
+  .campo:last-child{margin-bottom:0}
+  .campo label{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+               font-size:13px;margin-bottom:7px}
+  .valor{font-variant-numeric:tabular-nums;font-weight:700;font-size:13.5px;color:var(--azul)}
+  select{width:100%;font:inherit;font-size:13.5px;padding:9px 10px;border:1px solid var(--linha);
+         border-radius:8px;background:var(--creme-2);color:var(--tinta)}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;margin:2px 0}
+  input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:var(--creme-2);border:1px solid var(--linha)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;
+        background:var(--azul);border:2px solid var(--papel);margin-top:-8px;cursor:pointer}
+  input[type=range]::-moz-range-track{height:4px;border-radius:4px;background:var(--creme-2);border:1px solid var(--linha)}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border:2px solid var(--papel);border-radius:50%;background:var(--azul);cursor:pointer}
+  .escala{display:flex;justify-content:space-between;font-size:11px;color:var(--tinta-40);
+          font-variant-numeric:tabular-nums;margin-top:2px}
+  .segmentado{display:flex;border:1px solid var(--linha);border-radius:8px;overflow:hidden;background:var(--creme-2)}
+  .segmentado button{flex:1;font:inherit;font-size:12.5px;padding:8px 4px;border:0;background:transparent;
+                     color:var(--tinta-60);cursor:pointer}
+  .segmentado button[aria-pressed=true]{background:var(--azul);color:#fff;font-weight:600}
+  button:focus-visible,select:focus-visible,input:focus-visible,[tabindex]:focus-visible{
+    outline:2px solid var(--teal);outline-offset:2px}
+
+  /* ---------- diagnostico ---------- */
+  .diag{position:relative;overflow:hidden;padding-left:22px;box-shadow:0 1px 2px rgba(20,20,20,.05),0 8px 22px rgba(20,20,20,.05)}
+  .trilho{position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--teal)}
+  .diag.critico .trilho{background:var(--coral)}
+  .diag.atencao .trilho{background:linear-gradient(var(--coral),rgba(231,111,81,.35))}
+  .status{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;letter-spacing:.08em;
+          text-transform:uppercase;padding:5px 11px;border-radius:999px;border:1px solid var(--coral);color:var(--coral)}
+  .diag.critico .status{background:var(--coral);color:#fff}
+  .diag.equilibrado .status{border-color:var(--teal);background:var(--teal);color:#fff}
+  .medidor{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:14px 0 4px}
+  .medidor svg{flex:0 0 auto}
+  .leitura{font-size:14px;max-width:34ch;margin:0}
+  .leitura b{color:var(--azul)}
+  .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--linha);
+         border:1px solid var(--linha);border-radius:8px;overflow:hidden;margin-top:16px}
+  .tile{background:var(--papel);padding:12px 13px}
+  .tile .rotulo{display:block;margin-bottom:5px}
+  .tile .num{font-size:24px;white-space:nowrap;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+  .tile .num.dinheiro{font-size:20px}
+  .tile .pe{font-size:11.5px;color:var(--tinta-60);margin-top:3px}
+  .bloqueio{background:var(--creme-2);border:1px dashed var(--linha);border-radius:8px;padding:16px;margin-top:14px;font-size:13px}
+  .bloqueio b{display:block;margin-bottom:4px;color:var(--azul)}
+
+  /* ---------- contribuicoes ---------- */
+  .barra{margin:0 0 11px}
+  .barra:last-child{margin-bottom:0}
+  .barra .l{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;gap:12px}
+  .barra .l span:last-child{font-variant-numeric:tabular-nums;color:var(--tinta-60)}
+  .barra .t{display:block;height:8px;border-radius:4px;background:var(--creme-2);overflow:hidden}
+  .barra .f{display:block;height:100%;background:var(--teal);border-radius:4px;transition:width .35s ease}
+  .barra.alto .f{background:var(--coral)}
+
+  /* ---------- threshold ---------- */
+  .thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .thumbs button{font:inherit;font-size:12.5px;font-variant-numeric:tabular-nums;padding:7px 11px;border-radius:7px;
+                 border:1px solid var(--linha);background:var(--creme-2);color:var(--tinta-60);cursor:pointer}
+  .thumbs button[aria-pressed=true]{background:var(--azul);border-color:var(--azul);color:#fff;font-weight:600}
+  .traducao{display:grid;gap:10px;font-size:13px}
+  .traducao div{display:flex;gap:10px;align-items:baseline}
+  .pontos{display:flex;gap:3px;flex:0 0 auto}
+  .pontos i{width:9px;height:9px;border-radius:50%;background:var(--creme-2);border:1px solid var(--linha)}
+  .pontos i.on{background:var(--teal);border-color:var(--teal)}
+  .pontos i.warn{background:var(--coral);border-color:var(--coral)}
+  .nota{font-size:12px;color:var(--tinta-60);margin:14px 0 0;padding-top:12px;border-top:1px solid var(--linha)}
+
+
+
+  /* ---------- passos ---------- */
+  .chip-score{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;
+              padding:6px 12px;border-radius:999px;background:var(--azul);color:#fff;
+              font-variant-numeric:tabular-nums}
+  .chip-score.critico{background:var(--coral)}
+  .chip-score.equilibrado{background:var(--teal)}
+  .chip-score span{opacity:.8;font-weight:500;text-transform:uppercase;font-size:10.5px;letter-spacing:.1em}
+  .passos{display:flex;margin-bottom:22px;border:1px solid var(--linha);border-radius:10px;
+          overflow:hidden;background:var(--papel)}
+  .passos button{flex:1;display:flex;gap:11px;align-items:center;font:inherit;text-align:left;
+                 padding:12px 16px;border:0;border-left:1px solid var(--linha);background:transparent;
+                 color:var(--tinta-60);cursor:pointer}
+  .passos button:first-child{border-left:0}
+  .passos button[aria-current=step]{background:var(--creme-2);color:var(--tinta)}
+  .passos .n{flex:0 0 24px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
+             font-size:12px;font-weight:700;background:var(--creme-2);border:1px solid var(--linha);
+             color:var(--tinta-60);font-variant-numeric:tabular-nums}
+  .passos button[aria-current=step] .n{background:var(--azul);border-color:var(--azul);color:#fff}
+  .passos .rot{display:block;font-size:13.5px;font-weight:600;line-height:1.3}
+  .passos .des{display:block;font-size:11.5px;color:var(--tinta-40);line-height:1.3}
+  .navegar{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 30px}
+  .cabeca{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+  .cabeca h2{margin:0}
+  .cabeca .rotulo{white-space:nowrap}
+
+  /* ---------- escuta ---------- */
+  .visoes{display:inline-flex;border:1px solid var(--linha);border-radius:8px;overflow:hidden;
+          background:var(--creme-2);margin-bottom:16px}
+  .visoes button{font:inherit;font-size:12.5px;padding:8px 16px;border:0;background:transparent;
+                 color:var(--tinta-60);cursor:pointer}
+  .visoes button[aria-pressed=true]{background:var(--azul);color:#fff;font-weight:600}
+  .aviso-escuta{display:flex;gap:10px;align-items:flex-start;background:var(--creme-2);
+                border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:12px 14px;
+                font-size:12.5px;color:var(--tinta-60);margin-bottom:18px;max-width:76ch}
+  .aviso-escuta b{color:var(--tinta)}
+  .dimensao{margin-bottom:18px;break-inside:avoid}
+  .dimensao > .rotulo{display:block;margin-bottom:8px}
+  .q{padding:11px 0;border-top:1px solid var(--linha)}
+  .q p{margin:0 0 8px;font-size:13.5px;max-width:62ch}
+  .likert{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;max-width:520px}
+  .likert button{font:inherit;font-size:11.5px;padding:7px 2px;border:1px solid var(--linha);
+                 border-radius:6px;background:var(--papel);color:var(--tinta-60);cursor:pointer}
+  .likert button[aria-pressed=true]{background:var(--azul);border-color:var(--azul);color:#fff;font-weight:600}
+  .pessoal{display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--linha);
+           margin-top:16px;padding-top:16px}
+  .pessoal .num{font-size:30px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--azul)}
+  .pessoal p{margin:0;font-size:13px;max-width:44ch}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+  .rh-topo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--linha);
+           border:1px solid var(--linha);border-radius:8px;overflow:hidden;margin-bottom:18px}
+  .rh-topo > div{background:var(--papel);padding:12px 13px}
+  .rh-topo .num{font-size:24px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+  .rh-topo .pe{font-size:11.5px;color:var(--tinta-60);margin-top:3px}
+  .rh-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+  .temas li{margin-bottom:7px;font-size:13px}
+  .temas li b{font-variant-numeric:tabular-nums;color:var(--azul)}
+  .opcao{display:flex;gap:9px;align-items:flex-start;font-size:13px;margin-top:14px;
+         padding-top:14px;border-top:1px solid var(--linha);cursor:pointer;max-width:60ch}
+  .opcao input{margin:2px 0 0;accent-color:#0f2942;flex:0 0 auto}
+
+  /* ---------- intervencoes ---------- */
+  .acoes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .acoes button{font:inherit;font-size:13px;text-align:left;padding:9px 13px;border-radius:999px;
+                border:1px solid var(--linha);background:var(--papel);color:var(--tinta);cursor:pointer}
+  .acoes button[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600}
+  .projecao{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;align-items:center}
+  .antes-depois{display:grid;gap:9px}
+  .ad{display:grid;grid-template-columns:64px minmax(0,1fr) 46px;gap:10px;align-items:center;font-size:12.5px}
+  .ad .t{display:block;height:14px;border-radius:3px;background:var(--creme-2);overflow:hidden}
+  .ad .f{display:block;height:100%;background:var(--coral)}
+  .ad.depois .f{background:var(--teal)}
+  .ad .n{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .ganho{border-left:3px solid var(--teal);padding-left:14px}
+  .ganho .num{font-size:24px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--azul)}
+  .ganho p{margin:4px 0 0;font-size:12.5px;color:var(--tinta-60)}
+
+  /* ---------- camada generativa ---------- */
+  .gerar{display:grid;grid-template-columns:200px minmax(0,1fr);gap:26px;align-items:start}
+  .abas{display:flex;flex-direction:column;gap:2px;border-right:1px solid var(--linha);padding-right:14px}
+  .abas button{font:inherit;font-size:13px;padding:9px 12px;border:0;background:transparent;color:var(--tinta-60);
+               cursor:pointer;text-align:left;border-left:2px solid transparent;border-radius:0 6px 6px 0}
+  .abas button[aria-selected=true]{color:var(--azul);font-weight:700;border-left-color:var(--coral);background:var(--creme-2)}
+  .saida-col{min-width:0}
+  .saida{background:var(--creme-2);border:1px solid var(--linha);border-radius:8px;padding:18px 22px;
+         font-size:13.5px;line-height:1.62;max-width:74ch}
+  .saida h3{font-size:12.5px;margin:16px 0 6px;letter-spacing:.02em}
+  .saida h3:first-child{margin-top:0}
+  .saida p{margin:0 0 10px}
+  .saida p:last-child{margin-bottom:0}
+  .saida ul{margin:0 0 10px;padding-left:18px}
+  .saida li{margin-bottom:5px}
+  .saida .meta{font-size:11.5px;color:var(--tinta-40);font-variant-numeric:tabular-nums}
+  .barra-acao{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  .btn{font:inherit;font-size:13px;font-weight:600;padding:9px 15px;border-radius:8px;border:1px solid var(--azul);
+       background:var(--azul);color:#fff;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--azul)}
+  .aviso-ia{font-size:11.5px;color:var(--tinta-60)}
+
+  /* ---------- limites ---------- */
+  .limites{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+  .limite{border-top:2px solid var(--azul);padding-top:11px}
+  .limite b{display:block;font-size:13px;margin-bottom:4px}
+  .limite p{margin:0;font-size:12.5px;color:var(--tinta-60)}
+
+  footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--linha);font-size:11.5px;
+         color:var(--tinta-60);max-width:80ch}
+  footer strong{color:var(--tinta)}
+
+  @media (max-width:880px){
+    .console,.duo,.projecao{grid-template-columns:minmax(0,1fr)}
+    .console .diag{order:-1}
+    .limites{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .passos{flex-direction:column}
+    .passos button{border-left:0;border-top:1px solid var(--linha)}
+    .passos button:first-child{border-top:0}
+    .passos .des{display:none}
+    .gerar{grid-template-columns:minmax(0,1fr);gap:14px}
+    .abas{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--linha);padding:0 0 2px}
+    .abas button{white-space:nowrap;border-left:0;border-bottom:2px solid transparent;border-radius:6px 6px 0 0}
+    .abas button[aria-selected=true]{border-left-color:transparent;border-bottom-color:var(--coral)}
+    .rh-cols{grid-template-columns:minmax(0,1fr)}
+    .rh-topo{grid-template-columns:minmax(0,1fr)}
+    .likert{grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+    .likert button{font-size:10.5px;padding:7px 1px}
+    .tiles{grid-template-columns:minmax(0,1fr)}
+    .wrap{padding:16px 14px 44px}
+  }
+  @media (max-width:440px){
+    .limites{grid-template-columns:minmax(0,1fr)}
+    .marca h1{font-size:17px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media print{body{background:#fff}.acoes,.thumbs,.barra-acao{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topo">
+    <div class="marca">
+      <span class="selo" aria-hidden="true">ML</span>
+      <div>
+        <h1>Copiloto MindLearning</h1>
+        <p>Camada de IA generativa sobre o modelo preditivo de burnout e turnover.</p>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span class="chip-score critico" id="chip-score">84% <span>crítico</span></span>
+      <span class="chip">Dados de exemplo</span>
+    </div>
+  </header>
+
+  <nav class="passos" id="passos" aria-label="Etapas">
+    <button type="button" data-ir="1" aria-current="step"><span class="n">1</span><span><span class="rot">Dados da equipe</span><span class="des">indicadores e escuta</span></span></button>
+    <button type="button" data-ir="2"><span class="n">2</span><span><span class="rot">Diagnóstico</span><span class="des">score, causas e confiança</span></span></button>
+    <button type="button" data-ir="3"><span class="n">3</span><span><span class="rot">Uso no dia a dia</span><span class="des">plano, projeção e textos</span></span></button>
+  </nav>
+
+  <!-- ============ PASSO 1, DADOS ============ -->
+  <div class="passo" id="passo-1">
+    <section>
+      <div class="cabeca">
+        <div>
+          <h2>Dados da equipe</h2>
+          <p class="sub" style="margin-bottom:0">Duas fontes de sinal: o que os sistemas registram e o que as pessoas dizem. Nenhuma delas pede dado pessoal.</p>
+        </div>
+      </div>
+      <div class="console">
+        <div class="cartao">
+        <div class="pilar">
+          <span class="rotulo">Recorte</span>
+          <div class="campo">
+            <label for="area">Diretoria ou área</label>
+            <select id="area">
+              <option value="ti" selected>Tecnologia da Informação</option>
+              <option value="atend">Atendimento e Call Center</option>
+              <option value="oper">Operações e Logística</option>
+              <option value="com">Comercial e Vendas</option>
+              <option value="fin">Financeiro</option>
+              <option value="saude">Saúde e Assistência</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="tamanho">Tamanho da equipe <span class="valor" id="v-tamanho">12 pessoas</span></label>
+            <input type="range" id="tamanho" min="3" max="50" step="1" value="12">
+            <div class="escala"><span>3</span><span>50</span></div>
+          </div>
+        </div>
+
+        <div class="pilar">
+          <span class="rotulo">1. Ritmo de trabalho</span>
+          <div class="campo">
+            <label for="reunioes">Horas em reuniões por dia <span class="valor" id="v-reunioes">4,5 h</span></label>
+            <input type="range" id="reunioes" min="1" max="7" step="0.5" value="4.5">
+            <div class="escala"><span>1,0</span><span>7,0</span></div>
+          </div>
+          <div class="campo">
+            <label for="extra">Equipe com hora extra acima de 2h/dia <span class="valor" id="v-extra">40%</span></label>
+            <input type="range" id="extra" min="0" max="100" step="5" value="40">
+            <div class="escala"><span>0%</span><span>100%</span></div>
+          </div>
+        </div>
+
+        <div class="pilar">
+          <span class="rotulo">2. Compliance e clima</span>
+          <div class="campo">
+            <label for="chamados">Chamados no canal de ética (90 dias) <span class="valor" id="v-chamados">6</span></label>
+            <input type="range" id="chamados" min="0" max="20" step="1" value="6">
+            <div class="escala"><span>0</span><span>20</span></div>
+          </div>
+          <div class="campo">
+            <label for="ferias">Equipe com férias vencidas <span class="valor" id="v-ferias">30%</span></label>
+            <input type="range" id="ferias" min="0" max="100" step="5" value="30">
+            <div class="escala"><span>0%</span><span>100%</span></div>
+          </div>
+        </div>
+
+        <div class="pilar">
+          <span class="rotulo">3. Comunicação assíncrona</span>
+          <div class="campo">
+            <label id="lbl-noite">Mensagens e e-mails depois das 20h</label>
+            <div class="segmentado" role="group" aria-labelledby="lbl-noite" id="noite">
+              <button type="button" data-v="0" aria-pressed="false">Baixa</button>
+              <button type="button" data-v="1" aria-pressed="false">Moderada</button>
+              <button type="button" data-v="2" aria-pressed="true">Recorrente</button>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="cartao">
+          <div class="cabeca">
+            <h2>Escuta da equipe</h2>
+            <span class="rotulo">Visão de quem responde</span>
+          </div>
+          <div class="aviso-escuta">
+        <span><b>Suas respostas não chegam individualizadas ao RH.</b> Elas entram em uma média da área,
+        que só aparece no painel quando houver ao menos 5 respostas. Nenhuma pergunta é sobre saúde,
+        tratamento ou vida pessoal.</span>
+      </div>
+      <div id="perguntas"></div>
+      <div class="pessoal">
+        <div class="num" id="p-num">--</div>
+        <p id="p-txt">Responda às 10 perguntas para ver o seu resultado.</p>
+      </div>
+      <div class="barra-acao">
+        <button type="button" class="btn" id="btn-enviar" disabled>Enviar de forma anônima</button>
+        <span class="aviso-ia" id="envio-status">O envio soma a sua resposta à média da área.</span>
+      </div>
+        </div>
+      </div>
+    </section>
+    <div class="navegar">
+      <button type="button" class="btn" data-ir="2">Ver o diagnóstico</button>
+    </div>
+  </div>
+
+  <!-- ============ PASSO 2, DIAGNOSTICO ============ -->
+  <div class="passo" id="passo-2" hidden>
+    <section>
+      <div class="cartao diag critico" id="diag">
+        <span class="trilho" aria-hidden="true"></span>
+        <span class="rotulo">Diagnóstico preditivo</span>
+        <div class="medidor">
+          <svg width="216" height="126" viewBox="0 0 216 126" role="img" aria-labelledby="tit-med">
+            <title id="tit-med">Medidor do score de esgotamento</title>
+            <path d="M 18 110 A 90 90 0 0 1 198 110" fill="none" stroke="#f3ece0" stroke-width="13" stroke-linecap="round"></path>
+            <path id="arco" d="M 18 110 A 90 90 0 0 1 198 110" fill="none" stroke="#e76f51" stroke-width="13"
+                  stroke-linecap="round" stroke-dasharray="238 283" style="transition:stroke-dasharray .4s ease"></path>
+            <text x="108" y="94" text-anchor="middle" font-size="38" font-weight="700" fill="#0f2942"
+                  font-family="ui-sans-serif,system-ui,sans-serif" id="med-num" style="font-variant-numeric:tabular-nums">84%</text>
+            <text x="108" y="114" text-anchor="middle" font-size="11" fill="#141414" fill-opacity=".55"
+                  font-family="ui-sans-serif,system-ui,sans-serif">score de esgotamento</text>
+          </svg>
+          <div>
+            <span class="status" id="status">Crítico</span>
+            <p class="leitura" id="leitura" style="margin-top:12px"></p>
+          </div>
+        </div>
+
+        <div class="tiles" id="tiles">
+          <div class="tile">
+            <span class="rotulo">Zona limite</span>
+            <div class="num" id="t-pessoas">5</div>
+            <div class="pe" id="t-pessoas-pe">42% da equipe</div>
+          </div>
+          <div class="tile">
+            <span class="rotulo">Custo potencial</span>
+            <div class="num dinheiro" id="t-custo">R$ 125 mil</div>
+            <div class="pe">Afastamento e reposição</div>
+          </div>
+          <div class="tile">
+            <span class="rotulo">Prioridade</span>
+            <div class="num" id="t-driver">Agenda</div>
+            <div class="pe" id="t-driver-pe">Maior peso no score</div>
+          </div>
+        </div>
+
+        <div class="bloqueio" id="bloqueio" hidden>
+          <b>Diagnóstico suprimido</b>
+          Equipes com menos de 5 pessoas não recebem score. Com esse tamanho, o resultado agregado permitiria identificar indivíduos.
+        </div>
+      </div>
+    </section>
+
+  <section class="duo">
+    <div class="cartao">
+      <h2>Por que esse score</h2>
+      <p class="sub">Quantos pontos cada sinal adiciona ao score da área.</p>
+      <div id="contribuicoes"></div>
+      <p class="nota" id="nota-setor"></p>
+    </div>
+
+    <div class="cartao">
+      <h2>Confiança do alerta</h2>
+      <p class="sub">O corte define quantos alertas chegam ao RH e quantos deles são reais. Métricas do modelo do grupo.</p>
+      <div class="thumbs" role="group" aria-label="Corte de decisão" id="thumbs">
+        <button type="button" data-t="0.50" aria-pressed="false">0,50</button>
+        <button type="button" data-t="0.65" aria-pressed="false">0,65</button>
+        <button type="button" data-t="0.75" aria-pressed="false">0,75</button>
+        <button type="button" data-t="0.85" aria-pressed="true">0,85</button>
+        <button type="button" data-t="0.90" aria-pressed="false">0,90</button>
+      </div>
+      <div class="traducao">
+        <div><span class="pontos" id="p-prec" aria-hidden="true"></span><span id="txt-prec"></span></div>
+        <div><span class="pontos" id="p-rec" aria-hidden="true"></span><span id="txt-rec"></span></div>
+      </div>
+      <p class="nota" id="nota-thr"></p>
+    </div>
+  </section>
+
+    <section class="cartao">
+      <div class="cabeca">
+        <h2>Escuta da equipe</h2>
+        <span class="rotulo">Visão agregada do RH</span>
+      </div>
+      <div class="aviso-escuta">
+        <span><b>Visão agregada.</b> O RH vê médias por dimensão e temas recorrentes.
+        Resposta individual, texto original e identificação nunca são exibidos.</span>
+      </div>
+      <div class="rh-topo">
+        <div>
+          <span class="rotulo">Respostas</span>
+          <div class="num" id="e-n">8</div>
+          <div class="pe" id="e-n-pe">de 12 pessoas</div>
+        </div>
+        <div>
+          <span class="rotulo">Índice declarado</span>
+          <div class="num" id="e-idx">70</div>
+          <div class="pe" id="e-idx-pe">quanto maior, pior</div>
+        </div>
+        <div>
+          <span class="rotulo">Descolamento</span>
+          <div class="num" id="e-desc">-14</div>
+          <div class="pe" id="e-desc-pe">ante o score operacional</div>
+        </div>
+      </div>
+      <div class="rh-cols">
+        <div>
+          <span class="rotulo">Dimensões, da pior para a melhor</span>
+          <div id="e-dims" style="margin-top:10px"></div>
+        </div>
+        <div>
+          <span class="rotulo">Temas recorrentes no campo aberto</span>
+          <ul class="temas" style="margin:10px 0 0;padding-left:18px" id="e-temas"></ul>
+          <p class="nota" id="e-leitura"></p>
+          <label class="opcao">
+            <input type="checkbox" id="usar-escuta">
+            <span>Considerar a escuta no score do painel. O score passa a combinar 75% de sinal operacional e 25% de sinal declarado.</span>
+          </label>
+        </div>
+      </div>
+    </section>
+    <div class="navegar">
+      <button type="button" class="btn ghost" data-ir="1">Voltar aos dados</button>
+      <button type="button" class="btn" data-ir="3">Montar o plano</button>
+    </div>
+  </div>
+
+  <!-- ============ PASSO 3, USO ============ -->
+  <div class="passo" id="passo-3" hidden>
+
+  <section class="cartao">
+    <h2>Se a área agir agora</h2>
+    <p class="sub">Selecione intervenções e veja o score projetado. A simulação altera apenas os sinais operacionais.</p>
+    <div class="acoes" id="acoes">
+      <button type="button" data-a="focus" aria-pressed="false">Focus time de 2h por dia</button>
+      <button type="button" data-a="extra" aria-pressed="false">Congelar hora extra não crítica</button>
+      <button type="button" data-a="ferias" aria-pressed="false">Agendar férias vencidas em 60 dias</button>
+      <button type="button" data-a="silencio" aria-pressed="false">Janela de silêncio após as 20h</button>
+      <button type="button" data-a="escuta" aria-pressed="false">Rodada de escuta e auditoria de clima</button>
+    </div>
+    <div class="projecao">
+      <div class="antes-depois">
+        <div class="ad"><span>Hoje</span><span class="t"><span class="f" id="bar-antes" style="width:84%"></span></span><span class="n" id="n-antes">84%</span></div>
+        <div class="ad depois"><span>Projetado</span><span class="t"><span class="f" id="bar-depois" style="width:84%"></span></span><span class="n" id="n-depois">84%</span></div>
+      </div>
+      <div class="ganho">
+        <div class="num" id="g-num">Nenhuma ação</div>
+        <p id="g-txt">Escolha ao menos uma intervenção para projetar o resultado.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="cartao">
+    <h2>Camada generativa</h2>
+    <p class="sub">Os mesmos sinais viram texto pronto para a rotina do RH. Nenhum nome, nenhuma pessoa identificada.</p>
+    <div class="gerar">
+    <div class="abas" role="tablist" id="abas">
+      <button type="button" role="tab" data-p="briefing" aria-selected="true">Briefing executivo</button>
+      <button type="button" role="tab" data-p="plano" aria-selected="false">Plano 30 / 60 / 90</button>
+      <button type="button" role="tab" data-p="mensagem" aria-selected="false">Mensagem à liderança</button>
+      <button type="button" role="tab" data-p="conversa" aria-selected="false">Roteiro de 1:1</button>
+    </div>
+    <div class="saida-col">
+      <div class="saida" id="saida" role="region" aria-live="polite"></div>
+    <div class="barra-acao">
+      <button type="button" class="btn" id="btn-copiar">Copiar texto</button>
+      <button type="button" class="btn ghost" id="btn-imprimir">Gerar PDF</button>
+      <span class="aviso-ia">Texto gerado pelo protótipo. Requer revisão humana antes de circular.</span>
+      </div>
+    </div>
+    </div>
+  </section>
+
+    <div class="navegar">
+      <button type="button" class="btn ghost" data-ir="2">Voltar ao diagnóstico</button>
+    </div>
+  </div>
+
+
+  <section>
+    <h2>Limites do sistema</h2>
+    <p class="sub">Regras que o produto aplica sozinho, sem depender da boa vontade de quem usa.</p>
+    <div class="limites">
+      <div class="limite">
+        <b>Sem dado pessoal</b>
+        <p>Todas as entradas são agregadas por área. O painel não pede nome, matrícula, CID ou histórico de saúde.</p>
+      </div>
+      <div class="limite">
+        <b>Mínimo de 5 pessoas</b>
+        <p>Equipes menores têm o diagnóstico suprimido e a escuta só é exibida a partir de 5 respostas, para que o agregado não revele o indivíduo.</p>
+      </div>
+      <div class="limite">
+        <b>Alerta é hipótese</b>
+        <p>O score aponta risco de contexto, nunca diagnóstico. Nenhuma decisão sobre pessoa real sai daqui.</p>
+      </div>
+      <div class="limite">
+        <b>Humano no fim</b>
+        <p>Todo texto gerado passa por revisão do RH antes de virar comunicação ou plano oficial.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <strong>Protótipo acadêmico.</strong> Os valores exibidos são exemplos e não representam pessoas, equipes ou empresas reais.
+    O painel não realiza diagnóstico de saúde, não substitui avaliação profissional e não fundamenta decisão sobre indivíduos.
+    MindLearning, previsão de burnout e turnover em ambientes de alta pressão. TCC Mulheres in Tech, Data Science e IA.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SETORES = {
+    ti:    {nome:"Tecnologia da Informação", base:13, ref:"risco histórico do setor na base CAT/INSS"},
+    atend: {nome:"Atendimento e Call Center", base:16, ref:"setor com maior incidência de afastamento por transtorno mental"},
+    oper:  {nome:"Operações e Logística", base:14, ref:"alta incidência entre operadores de instalações e máquinas"},
+    com:   {nome:"Comercial e Vendas", base:12, ref:"pressão de meta concentrada em fim de trimestre"},
+    fin:   {nome:"Financeiro", base:11, ref:"pico de carga em fechamento mensal"},
+    saude: {nome:"Saúde e Assistência", base:15, ref:"jornada em turnos e contato contínuo com sofrimento"}
+  };
+
+  var THR = {
+    "0.50":{rec:0.8607, prec:0.2863, f1:0.4297},
+    "0.65":{rec:0.8300, prec:0.3784, f1:0.5198},
+    "0.75":{rec:0.8038, prec:0.4379, f1:0.5669},
+    "0.85":{rec:0.7412, prec:0.5145, f1:0.6074},
+    "0.90":{rec:0.6707, prec:0.5898, f1:0.6276}
+  };
+
+  var NOITE = ["Baixa","Moderada","Recorrente"];
+
+  var DIMS = [
+    {id:"exaustao", nome:"Exaustão emocional"},
+    {id:"clima",    nome:"Clima e relações"},
+    {id:"carga",    nome:"Carga e ritmo"},
+    {id:"sentido",  nome:"Reconhecimento e sentido"},
+    {id:"recup",    nome:"Recuperação"}
+  ];
+  var PERGUNTAS = [
+    {d:"exaustao", t:"Sinto-me emocionalmente esgotado ao final do dia de trabalho."},
+    {d:"exaustao", t:"Acordo cansado só de pensar em encarar mais uma jornada."},
+    {d:"clima",    t:"Sinto tensão ou conflitos não resolvidos na minha equipe."},
+    {d:"clima",    t:"Falta um ambiente seguro para expor dúvidas ou erros sem julgamento."},
+    {d:"carga",    t:"Minha agenda não deixa tempo de trabalho concentrado."},
+    {d:"carga",    t:"Preciso avançar tarefas fora do horário para dar conta da semana."},
+    {d:"sentido",  t:"Meu esforço passa despercebido pela liderança."},
+    {d:"sentido",  t:"Tenho dificuldade de ver sentido no que entrego."},
+    {d:"recup",    t:"Termino a semana sem conseguir desligar do trabalho."},
+    {d:"recup",    t:"Adio férias ou descanso por causa das entregas."}
+  ];
+  var ESCALA = ["Nunca","Rara","Às vezes","Freq.","Sempre"];
+  var BASE_N = 8;
+  var BASE_MEDIA = [3.2, 2.9, 2.4, 2.3, 3.4, 3.1, 2.1, 2.2, 3.0, 2.9];
+  var TEMAS = [
+    {t:"excesso de reuniões sem pauta", n:5},
+    {t:"prazos empilhados no fim do mês", n:4},
+    {t:"pouca devolutiva da liderança", n:3}
+  ];
+  var RECOMENDA = {
+    exaustao:"Negocie com a liderança a retirada de uma entrega do seu mês e proteja duas horas por dia sem reunião.",
+    clima:"Leve um ponto de tensão concreto para a próxima 1:1, com fato e efeito, sem nome.",
+    carga:"Liste as três demandas que competem entre si e peça priorização explícita.",
+    sentido:"Peça uma devolutiva específica sobre a última entrega, não uma avaliação geral.",
+    recup:"Agende as férias vencidas ainda neste trimestre e combine quem cobre cada frente."
+  };
+  var CUSTO_PESSOA = 25000;
+
+  var st = {
+    area:"ti", tamanho:12, reunioes:4.5, extra:40, chamados:6, ferias:30, noite:2,
+    thr:"0.85", painel:"briefing", acoes:{},
+    passo:1, resp:[null,null,null,null,null,null,null,null,null,null],
+    enviado:false, usarEscuta:false
+  };
+
+  var $ = function(id){ return document.getElementById(id); };
+  var cl = function(v,a,b){ return Math.max(a, Math.min(b, v)); };
+  var pt = function(n){ return n.toLocaleString("pt-BR"); };
+  var dec = function(n,c){ return n.toLocaleString("pt-BR",{minimumFractionDigits:c,maximumFractionDigits:c}); };
+
+  /* ---------- modelo transparente do protótipo ---------- */
+  function calcular(s){
+    var setor = SETORES[s.area];
+    var c = [
+      {id:"reunioes", nome:"Agenda saturada",        curto:"Agenda",     pontos: cl((s.reunioes-2)/3.5,0,1)*23},
+      {id:"extra",    nome:"Hora extra recorrente",  curto:"Jornada",    pontos: Math.pow(s.extra/100,0.7)*25},
+      {id:"chamados", nome:"Sinais de compliance",   curto:"Compliance", pontos: cl(s.chamados/8,0,1)*19},
+      {id:"ferias",   nome:"Férias vencidas",        curto:"Descanso",   pontos: Math.pow(s.ferias/100,0.7)*16},
+      {id:"noite",    nome:"Trabalho após as 20h",   curto:"Fronteira",  pontos: (s.noite/2)*20},
+      {id:"setor",    nome:"Risco base do setor",    curto:"Setor",      pontos: setor.base}
+    ];
+    var score = cl(Math.round(c.reduce(function(a,x){return a+x.pontos;},0)), 4, 97);
+    var pessoas = Math.round(s.tamanho * score / 200);
+    var ordem = c.filter(function(x){return x.id!=="setor";}).slice().sort(function(a,b){return b.pontos-a.pontos;});
+    return {
+      score: score,
+      banda: score >= 70 ? "critico" : (score >= 40 ? "atencao" : "equilibrado"),
+      pessoas: pessoas,
+      perc: Math.round(score/2),
+      custo: pessoas * CUSTO_PESSOA,
+      contrib: c,
+      top: ordem,
+      setor: setor
+    };
+  }
+
+  function simular(s){
+    var c = {area:s.area, tamanho:s.tamanho, reunioes:s.reunioes, extra:s.extra,
+             chamados:s.chamados, ferias:s.ferias, noite:s.noite};
+    if(s.acoes.focus)    c.reunioes = Math.max(1, c.reunioes - 1.5);
+    if(s.acoes.extra)    c.extra    = Math.max(0, c.extra - 20);
+    if(s.acoes.ferias)   c.ferias   = Math.max(0, c.ferias - 25);
+    if(s.acoes.silencio) c.noite    = Math.max(0, c.noite - 1);
+    if(s.acoes.escuta)   c.chamados = Math.max(0, c.chamados - 3);
+    return calcular(c);
+  }
+
+  var ROTULO_BANDA = {critico:"Crítico", atencao:"Atenção", equilibrado:"Equilibrado"};
+
+  function mediasAgregadas(s){
+    var n = BASE_N + (s.enviado ? 1 : 0);
+    return {
+      n: n,
+      q: BASE_MEDIA.map(function(m,i){
+        return s.enviado ? (m*BASE_N + s.resp[i]) / n : m;
+      })
+    };
+  }
+
+  function porDimensao(q){
+    return DIMS.map(function(d){
+      var ix = [];
+      PERGUNTAS.forEach(function(p,i){ if(p.d === d.id) ix.push(i); });
+      var m = ix.reduce(function(a,i){ return a + q[i]; }, 0) / ix.length;
+      return {id:d.id, nome:d.nome, media:m, idx:Math.round(m/4*100)};
+    }).sort(function(a,b){ return b.media - a.media; });
+  }
+
+  function climaAgregado(s){
+    var ag = mediasAgregadas(s);
+    var m = ag.q.reduce(function(a,b){ return a+b; },0) / ag.q.length;
+    return {n: ag.n, idx: Math.round(m/4*100), dims: porDimensao(ag.q)};
+  }
+
+  function ajustar(r, s, clima){
+    if(!s.usarEscuta || clima.n < 5) return r;
+    var sc = cl(Math.round(0.75*r.score + 0.25*clima.idx), 4, 97);
+    r.score = sc;
+    r.banda = sc >= 70 ? "critico" : (sc >= 40 ? "atencao" : "equilibrado");
+    r.pessoas = Math.round(s.tamanho * sc / 200);
+    r.perc = Math.round(sc/2);
+    r.custo = r.pessoas * CUSTO_PESSOA;
+    r.comEscuta = true;
+    return r;
+  }
+
+  function lerDescolamento(d){
+    if(d <= -8) return "Os indicadores operacionais se anteciparam à percepção declarada. Essa é a janela de prevenção, agir aqui custa menos do que agir depois do afastamento.";
+    if(d >= 8)  return "A equipe relata mais desgaste do que os indicadores operacionais mostram. Vale revisar quais sinais o painel ainda não captura.";
+    return "Sinal operacional e sinal declarado convergem, o que aumenta a confiança no diagnóstico.";
+  }
+
+  /* ---------- textos da camada generativa ---------- */
+  var ACOES_POR_DRIVER = {
+    reunioes: {
+      d30:"Bloquear focus time de 2h por dia na agenda de toda a área e cortar reuniões recorrentes sem pauta.",
+      d60:"Revisar o ritual de acompanhamento: uma reunião de status por semana, com pauta e dono definidos.",
+      d90:"Medir horas de reunião por pessoa como indicador de gestão, junto com entrega."
+    },
+    extra: {
+      d30:"Congelar aprovação de hora extra não crítica e redistribuir as demandas em aberto.",
+      d60:"Repactuar prazos das entregas que estão sustentando a jornada estendida.",
+      d90:"Avaliar quadro e escopo da área: hora extra recorrente costuma ser sintoma de dimensionamento."
+    },
+    chamados: {
+      d30:"Acionar compliance para leitura conjunta dos chamados do período, sem exposição de quem relatou.",
+      d60:"Rodar auditoria de clima com facilitação externa e devolutiva para a liderança da área.",
+      d90:"Incluir clima e segurança psicológica na avaliação de desempenho da liderança."
+    },
+    ferias: {
+      d30:"Notificar o RH para agendamento compulsório das férias vencidas.",
+      d60:"Escalonar o calendário de férias para que a saída de uma pessoa não sobrecarregue as demais.",
+      d90:"Criar trava no sistema que impeça acúmulo acima de 12 meses."
+    },
+    noite: {
+      d30:"Definir janela de silêncio após as 20h, com envio programado como padrão nas ferramentas.",
+      d60:"Combinar com a liderança regras de urgência real: o que justifica mensagem fora do horário.",
+      d90:"Acompanhar o volume de mensagens noturnas como indicador de fronteira entre vida e trabalho."
+    }
+  };
+
+  function abertura(r, s){
+    var nivel = r.banda === "critico" ? "faixa crítica" : (r.banda === "atencao" ? "faixa de atenção" : "faixa equilibrada");
+    return "A área de " + r.setor.nome + ", com " + s.tamanho + " pessoas, está com score de esgotamento de "
+      + r.score + "%, na " + nivel + ".";
+  }
+
+  function drivers(r){
+    var a = r.top[0], b = r.top[1];
+    return "O que mais pesa: " + a.nome.toLowerCase() + " (" + Math.round(a.pontos)
+      + " pontos) e " + b.nome.toLowerCase() + " (" + Math.round(b.pontos) + " pontos).";
+  }
+
+  function textos(s, r, p, clima){
+    var thr = THR[s.thr];
+    var out = {};
+    var acao = r.top.slice(0,3);
+
+    out.briefing =
+      "<span class='meta'>Gerado em " + new Date().toLocaleDateString("pt-BR") + " &middot; corte do modelo " + dec(parseFloat(s.thr),2) + "</span>" +
+      "<h3>Situação</h3><p>" + abertura(r,s) + " " + drivers(r) + "</p>" +
+      "<h3>Impacto estimado</h3><p>Cerca de <b>" + r.pessoas + " pessoa" + (r.pessoas===1?"":"s") + "</b> em zona limite, o equivalente a "
+        + r.perc + "% da equipe, e custo potencial de <b>R$ " + pt(r.custo) + "</b> entre afastamento e reposição. "
+        + "A referência setorial usada é o " + r.setor.ref + ".</p>" +
+      "<h3>Escuta da equipe</h3><p>" + (clima.n < 5
+        ? "Ainda sem respostas suficientes para exibir o sinal declarado. O mínimo é de 5 respostas por área."
+        : clima.n + " respostas recebidas. Índice declarado de " + clima.idx + " contra " + clima.op
+          + "% de score operacional, com a dimensão de " + clima.dims[0].nome.toLowerCase()
+          + " no topo (" + clima.dims[0].idx + "). " + lerDescolamento(clima.desc)) + "</p>" +
+      "<h3>Leitura do alerta</h3><p>No corte de " + dec(parseFloat(s.thr),2) + ", o modelo encontra cerca de "
+        + Math.round(thr.rec*100) + "% dos casos reais e acerta em " + Math.round(thr.prec*100)
+        + "% dos alertas emitidos. O alerta é hipótese de contexto, não diagnóstico de pessoa.</p>" +
+      "<h3>Recomendação</h3><p>" + (r.banda === "critico"
+        ? "Intervenção imediata na gestão da agenda e na jornada, com devolutiva à liderança em até 15 dias."
+        : (r.banda === "atencao"
+          ? "Ação preventiva focada nos dois sinais de maior peso, com nova leitura em 30 dias."
+          : "Manter o monitoramento mensal e preservar as práticas que sustentam o resultado.")) + "</p>";
+
+    var li = function(d){ return acao.map(function(x){ return "<li>" + ACOES_POR_DRIVER[x.id][d] + "</li>"; }).join(""); };
+    out.plano =
+      "<span class='meta'>Prioridades derivadas dos três sinais de maior peso</span>" +
+      "<h3>Primeiros 30 dias, conter</h3><ul>" + li("d30") + "</ul>" +
+      "<h3>Até 60 dias, corrigir a causa</h3><ul>" + li("d60") + "</ul>" +
+      "<h3>Até 90 dias, sustentar</h3><ul>" + li("d90") +
+        "<li>Reavaliar o score da área e comparar com a leitura de hoje (" + r.score + "%).</li>" +
+        (clima.n >= 5 ? "<li>Rodar nova escuta e verificar se a dimensão de " + clima.dims[0].nome.toLowerCase() + " saiu do topo.</li>" : "") +
+        "</ul>";
+
+    var meta = p ? p.score : r.score;
+    out.mensagem =
+      "<span class='meta'>Rascunho de e-mail, revisar antes de enviar</span>" +
+      "<p><b>Assunto:</b> " + r.setor.nome + ", indicadores de esgotamento e plano de contenção</p>" +
+      "<p>Olá,</p>" +
+      "<p>O monitoramento preventivo apontou score de esgotamento de " + r.score + "% na área, com "
+        + r.pessoas + " pessoa" + (r.pessoas===1?"":"s") + " em zona limite. Os sinais de maior peso são "
+        + r.top[0].nome.toLowerCase() + " e " + r.top[1].nome.toLowerCase() + ".</p>" +
+      "<p>A projeção indica que as medidas de contenção levam o score para cerca de " + meta
+        + "%, com redução estimada de R$ " + pt(Math.max(0, r.custo - (p ? p.custo : r.custo))) + " em custo potencial.</p>" +
+      "<p>Preciso da sua decisão sobre dois pontos: o bloqueio de agenda para focus time e a suspensão de hora extra não crítica pelos próximos 30 dias.</p>" +
+      "<p>Os dados são agregados por área. Nenhuma pessoa é identificada neste acompanhamento.</p>" +
+      "<p>Obrigada,<br>Time de People Analytics</p>";
+
+    out.conversa =
+      "<span class='meta'>Roteiro para a liderança. Conversa sobre trabalho, nunca sobre saúde.</span>" +
+      "<h3>Como abrir</h3><p>Diga que a conversa é sobre carga e organização do trabalho, e que nenhum dado individual foi analisado.</p>" +
+      "<h3>Quatro perguntas</h3><ul>" +
+        "<li>Quais das suas reuniões desta semana poderiam não existir?</li>" +
+        "<li>O que costuma te fazer trabalhar depois das 20h?</li>" +
+        "<li>Se você pudesse tirar uma entrega do seu mês, qual seria?</li>" +
+        "<li>Do que você precisa de mim para conseguir descansar de verdade nas férias?</li></ul>" +
+      "<h3>O que não fazer</h3><ul>" +
+        "<li>Não mencionar score, risco ou qualquer termo de diagnóstico.</li>" +
+        "<li>Não pedir informação sobre saúde, tratamento ou vida pessoal.</li>" +
+        "<li>Não usar a conversa como avaliação de desempenho.</li></ul>" +
+      "<h3>Se a pessoa relatar sofrimento</h3><p>Acolha, não investigue, e ofereça os canais de apoio da empresa no mesmo dia.</p>";
+
+    return out;
+  }
+
+  function montarPerguntas(){
+    var html = "", atual = null;
+    PERGUNTAS.forEach(function(p, i){
+      if(p.d !== atual){
+        if(atual !== null) html += "</div>";
+        var nome = DIMS.filter(function(d){ return d.id === p.d; })[0].nome;
+        html += "<div class='dimensao'><span class='rotulo'>" + nome + "</span>";
+        atual = p.d;
+      }
+      html += "<div class='q'><p>" + (i+1) + ". " + p.t + "</p><div class='likert' role='group' data-q='" + i + "'>"
+        + ESCALA.map(function(e, v){
+            return "<button type='button' data-v='" + v + "' aria-pressed='false'>" + e + "</button>";
+          }).join("") + "</div></div>";
+    });
+    return html + "</div>";
+  }
+  $("perguntas").innerHTML = montarPerguntas();
+
+  function renderEscuta(rOp){
+    var respondidas = st.resp.filter(function(x){ return x !== null; }).length;
+    var completo = respondidas === 10;
+    if(completo){
+      var m = st.resp.reduce(function(a,b){ return a+b; },0) / 10;
+      var idx = Math.round(m/4*100);
+      var faixa = idx >= 65 ? "alto" : (idx >= 35 ? "moderado" : "baixo");
+      var pior = porDimensao(st.resp)[0];
+      $("p-num").textContent = idx;
+      $("p-txt").innerHTML = "Seu índice de desgaste declarado está <b>" + faixa
+        + "</b>. A dimensão mais pesada é <b>" + pior.nome.toLowerCase() + "</b>. "
+        + RECOMENDA[pior.id];
+    } else {
+      $("p-num").textContent = respondidas + "/10";
+      $("p-txt").textContent = "Responda às 10 perguntas para ver o seu resultado.";
+    }
+    $("btn-enviar").disabled = !completo || st.enviado;
+    $("btn-enviar").textContent = st.enviado ? "Resposta registrada" : "Enviar de forma anônima";
+    $("envio-status").textContent = st.enviado
+      ? "Registrada na média da área. O texto e as respostas individuais não são exibidos ao RH."
+      : "O envio soma a sua resposta à média da área.";
+
+    var c = climaAgregado(st);
+    var desc = c.idx - rOp.score;
+    c.desc = desc; c.op = rOp.score;
+    $("e-n").textContent = c.n;
+    $("e-n-pe").textContent = "de " + st.tamanho + " pessoas";
+    $("e-idx").textContent = c.n >= 5 ? c.idx : "--";
+    $("e-idx-pe").textContent = c.n >= 5 ? "quanto maior, pior" : "mínimo de 5 respostas";
+    $("e-desc").textContent = (desc > 0 ? "+" : "") + desc;
+    $("e-dims").innerHTML = c.dims.map(function(d, i){
+      return "<div class='barra" + (i === 0 ? " alto" : "") + "'>"
+        + "<div class='l'><span>" + d.nome + "</span><span>" + d.idx + "</span></div>"
+        + "<div class='t'><span class='f' style='width:" + d.idx + "%'></span></div></div>";
+    }).join("");
+    $("e-temas").innerHTML = TEMAS.map(function(t){
+      return "<li>" + t.t + " <b>(" + t.n + " menções)</b></li>";
+    }).join("");
+    $("e-leitura").textContent = lerDescolamento(desc);
+    $("usar-escuta").checked = st.usarEscuta;
+    $("usar-escuta").disabled = c.n < 5;
+    return c;
+  }
+
+  /* ---------- render ---------- */
+  function render(){
+    var rOp = calcular(st);
+    var clima = renderEscuta(rOp);
+    var r = ajustar(calcular(st), st, clima);
+    var temAcao = Object.keys(st.acoes).some(function(k){ return st.acoes[k]; });
+    var p = temAcao ? ajustar(simular(st), st, clima) : null;
+    var pequena = st.tamanho < 5;
+
+    $("v-tamanho").textContent = st.tamanho + " pessoas";
+    $("v-reunioes").textContent = dec(st.reunioes,1) + " h";
+    $("v-extra").textContent = st.extra + "%";
+    $("v-chamados").textContent = st.chamados;
+    $("v-ferias").textContent = st.ferias + "%";
+
+    var diag = $("diag");
+    diag.className = "cartao diag " + r.banda;
+    $("status").textContent = ROTULO_BANDA[r.banda];
+    $("med-num").textContent = r.score + "%";
+    $("arco").setAttribute("stroke-dasharray", (283 * r.score / 100).toFixed(1) + " 283");
+    $("arco").setAttribute("stroke", r.banda === "equilibrado" ? "#1f7a8c" : "#e76f51");
+
+    $("leitura").innerHTML = pequena
+      ? "Sem leitura agregada para equipes com menos de 5 pessoas."
+      : "Equipe de <b>" + st.tamanho + "</b> pessoas em " + r.setor.nome + ". O sinal dominante é <b>"
+        + r.top[0].nome.toLowerCase() + "</b>."
+        + (r.comEscuta ? " Score combinado com a escuta da equipe." : "");
+
+    $("t-pessoas").textContent = r.pessoas;
+    $("t-pessoas-pe").textContent = r.perc + "% da equipe";
+    $("t-custo").textContent = "R$ " + pt(Math.round(r.custo/1000)) + " mil";
+    $("t-driver").textContent = r.top[0].curto;
+    $("t-driver-pe").textContent = Math.round(r.top[0].pontos) + " pontos no score";
+
+    $("tiles").hidden = pequena;
+    $("bloqueio").hidden = !pequena;
+
+    var maior = Math.max.apply(null, r.contrib.map(function(x){ return x.pontos; }));
+    $("contribuicoes").innerHTML = r.contrib.slice().sort(function(a,b){ return b.pontos-a.pontos; })
+      .map(function(x){
+        var alto = x.pontos >= maior * 0.75 && x.id !== "setor";
+        return "<div class='barra" + (alto ? " alto" : "") + "'>"
+          + "<div class='l'><span>" + x.nome + "</span><span>" + Math.round(x.pontos) + " pts</span></div>"
+          + "<div class='t'><span class='f' style='width:" + Math.min(100, x.pontos/25*100).toFixed(1) + "%'></span></div></div>";
+      }).join("");
+    $("nota-setor").textContent = "Risco base do setor vem do " + r.setor.ref
+      + ". Os demais pontos vêm dos indicadores que o RH informa acima."
+      + (r.comEscuta ? " Com a escuta ativada, o score exibido no painel combina esses pontos (75%) com o índice declarado pela equipe (25%)." : "");
+
+    var t = THR[st.thr];
+    var pr = Math.round(t.prec*10), rc = Math.round(t.rec*10);
+    var bolas = function(n, cls){
+      var h = "";
+      for(var i=0;i<10;i++){ h += "<i class='" + (i<n ? cls : "") + "'></i>"; }
+      return h;
+    };
+    $("p-prec").innerHTML = bolas(pr, "warn");
+    $("p-rec").innerHTML = bolas(rc, "on");
+    $("txt-prec").innerHTML = "A cada 10 alertas enviados ao RH, <b>" + pr + "</b> são casos reais.";
+    $("txt-rec").innerHTML = "De cada 10 pessoas em risco real, o sistema encontra <b>" + rc + "</b>.";
+    $("nota-thr").textContent = "Corte " + dec(parseFloat(st.thr),2) + ": recall " + dec(t.rec*100,1)
+      + "%, precisão " + dec(t.prec*100,1) + "%, F1 " + dec(t.f1,2)
+      + ". Cortes baixos encontram mais gente e produzem fadiga de alerta. Cortes altos preservam a confiança do RH e deixam casos passar.";
+
+    var alvo = p ? p.score : r.score;
+    $("bar-antes").style.width = r.score + "%";
+    $("bar-depois").style.width = alvo + "%";
+    $("n-antes").textContent = r.score + "%";
+    $("n-depois").textContent = alvo + "%";
+    if(p){
+      var economia = Math.max(0, r.custo - p.custo);
+      var menos = Math.max(0, r.pessoas - p.pessoas);
+      $("g-num").textContent = "-" + (r.score - p.score) + " pontos";
+      $("g-txt").innerHTML = "Score projetado de " + p.score + "%, " + menos + " pessoa"
+        + (menos===1?"":"s") + " fora da zona limite e R$ " + pt(economia) + " de custo potencial evitado.";
+    } else {
+      $("g-num").textContent = "Nenhuma ação";
+      $("g-txt").textContent = "Escolha ao menos uma intervenção para projetar o resultado.";
+    }
+
+    var chip = $("chip-score");
+    chip.className = "chip-score " + r.banda;
+    chip.innerHTML = r.score + "% <span>" + ROTULO_BANDA[r.banda].toLowerCase() + "</span>";
+
+    $("saida").innerHTML = textos(st, r, p, clima)[st.painel];
+  }
+
+  /* ---------- eventos ---------- */
+  ["tamanho","reunioes","extra","chamados","ferias"].forEach(function(id){
+    $(id).addEventListener("input", function(e){
+      st[id] = parseFloat(e.target.value);
+      render();
+    });
+  });
+  $("area").addEventListener("change", function(e){ st.area = e.target.value; render(); });
+
+  $("noite").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    st.noite = parseInt(b.dataset.v,10);
+    [].forEach.call(this.querySelectorAll("button"), function(x){
+      x.setAttribute("aria-pressed", String(x === b));
+    });
+    render();
+  });
+
+  $("thumbs").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    st.thr = b.dataset.t;
+    [].forEach.call(this.querySelectorAll("button"), function(x){
+      x.setAttribute("aria-pressed", String(x === b));
+    });
+    render();
+  });
+
+  $("acoes").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    var k = b.dataset.a;
+    st.acoes[k] = !st.acoes[k];
+    b.setAttribute("aria-pressed", String(!!st.acoes[k]));
+    render();
+  });
+
+  $("abas").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    st.painel = b.dataset.p;
+    [].forEach.call(this.querySelectorAll("button"), function(x){
+      x.setAttribute("aria-selected", String(x === b));
+    });
+    render();
+  });
+
+  function irPara(n){
+    st.passo = n;
+    [1,2,3].forEach(function(i){ $("passo-" + i).hidden = (i !== n); });
+    [].forEach.call($("passos").querySelectorAll("button"), function(b){
+      if(parseInt(b.dataset.ir,10) === n){ b.setAttribute("aria-current","step"); }
+      else { b.removeAttribute("aria-current"); }
+    });
+    window.scrollTo({top:0, behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth"});
+  }
+  document.addEventListener("click", function(e){
+    var b = e.target.closest("[data-ir]"); if(!b) return;
+    irPara(parseInt(b.dataset.ir, 10));
+  });
+
+  $("perguntas").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    var grupo = b.parentNode, q = parseInt(grupo.dataset.q, 10);
+    st.resp[q] = parseInt(b.dataset.v, 10);
+    [].forEach.call(grupo.querySelectorAll("button"), function(x){
+      x.setAttribute("aria-pressed", String(x === b));
+    });
+    render();
+  });
+
+  $("btn-enviar").addEventListener("click", function(){
+    st.enviado = true;
+    render();
+  });
+
+  $("usar-escuta").addEventListener("change", function(e){
+    st.usarEscuta = e.target.checked;
+    render();
+  });
+
+  $("btn-copiar").addEventListener("click", function(){
+    var txt = $("saida").innerText;
+    var botao = this, original = "Copiar texto";
+    var ok = function(){ botao.textContent = "Copiado"; setTimeout(function(){ botao.textContent = original; }, 1600); };
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(ok, function(){ selecionar(); });
+      } else { selecionar(); }
+    }catch(err){ selecionar(); }
+    function selecionar(){
+      var sel = window.getSelection(), rg = document.createRange();
+      rg.selectNodeContents($("saida")); sel.removeAllRanges(); sel.addRange(rg);
+      botao.textContent = "Texto selecionado";
+      setTimeout(function(){ botao.textContent = original; }, 2200);
+    }
+  });
+
+  $("btn-imprimir").addEventListener("click", function(){ window.print(); });
+
+  render();
+})();
+</script>
+</body>
+</html>
