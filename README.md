@@ -2,7 +2,7 @@
 TCC da Turma Fly 2026 - diversiData
 GRUPO 3- Mind Learning
 
-`Python` `pandas` `scikit-learn` `[base usada]`
+`Python` `pandas` `scikit-learn` `dados da base de Comunicações de Acidente de Trabalho (CAT)`
 
 ### Prevenção e Diagnóstico de Burnout Ocupacional via Análise de Dados
 
@@ -14,7 +14,7 @@ O Estudo busca analisar e mapear os fatores de risco, padrões demográficos, di
 ---
 
 ## Os dados
-- Fonte: ados das Comunicações de Acidente de Trabalho (CAT) emitidas junto ao INSS entre 
+- Fonte: dados das Comunicações de Acidente de Trabalho (CAT) emitidas junto ao INSS entre 
 - Recorte: Abrangência nacional, no período entre 2023 e o primeiro semestre de 2026
 - Amostra neste repositorio: [amostra geral estratificada](https://github.com/LaviniBastos/Burnout-system/blob/main/dados/amostra_geral_estratificada_1000.csv) e [amostra filtrada por saúde mental estratificada](https://github.com/LaviniBastos/Burnout-system/blob/main/dados/amostra_saude_mental__estratificada_1000.csv)
 - Como reproduzir: [ver dados/FONTE.md]
