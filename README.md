@@ -16,7 +16,7 @@ O Estudo busca analisar e mapear os fatores de risco, padrões demográficos, di
 ## Os dados
 - Fonte: ados das Comunicações de Acidente de Trabalho (CAT) emitidas junto ao INSS entre 
 - Recorte: Abrangência nacional, no período entre 2023 e o primeiro semestre de 2026
-- Amostra neste repositorio: [X linhas, so para o codigo rodar]
+- Amostra neste repositorio: [amostra geral estratificada](https://github.com/LaviniBastos/Burnout-system/blob/main/dados/amostra_geral_estratificada_1000.csv) e [amostra filtrada por saúde mental estratificada](https://github.com/LaviniBastos/Burnout-system/blob/main/dados/amostra_saude_mental__estratificada_1000.csv)
 - Como reproduzir: [ver dados/FONTE.md]
 
 ---
@@ -31,7 +31,6 @@ O Estudo busca analisar e mapear os fatores de risco, padrões demográficos, di
 
 ## O método
 análise descritiva (exploratória) conduzida sobre a prevalência real do fenômeno (1,078% dos registros), sem reamostragem, sobre ou sub-amostragem.
-[Quatro linhas: limpeza, variaveis, modelo escolhido e por que.]
 
 ## Os resultados
 1. **Risco de afastamento por saúde mental é maior entre mulheres independente e cargo**
@@ -39,8 +38,7 @@ análise descritiva (exploratória) conduzida sobre a prevalência real do fenô
 3. Risco de afastamento por saúde mental é maior entre pessoas em cargos de liderança e cargos com ensino superior completo
 
 ## O prototipo
-[Link do GitHub Pages] - [uma frase sobre o que a tela faz]
-
+[Acesse aqui o protótipo](https://lavinibastos.github.io/Burnout-system/)
 
 ##  Estrutura do Projeto & O que foi feito
 
@@ -90,19 +88,18 @@ O cruzamento mostra que a disparidade de risco entre gêneros não é uniforme a
 No setor financeiro, ambos os gêneros aparecem com risco extremamente elevado — mulheres 47,7x e homens 38,0x —, mas a disparidade relativa entre os gêneros ali é menor (1,3x) do que em setores como Correios/Logística, onde mulheres têm razão de risco de 2,76x contra 1,76x dos homens (disparidade de 1,6x)
 
 ###  Fase 3: Modelagem Preditiva 
-[completar com métricas pós modelagem]
+- **Limpeza:** foram removidas variáveis que causam vazamento de dados (CID, natureza da lesão, parte do corpo, agente causador, indicador de óbito, datas brutas) e colunas redundantes ou de alta cardinalidade (município, códigos de CBO/CNAE, UF antiga); a idade nula foi preenchida com a mediana.
+
+- **Variáveis:** usamos gênero, idade, faixa etária, grupo ocupacional (CBO macro), setor (CNAE macro), UF confiável e período (mês/semestre), todas convertidas por One-Hot Encoding; além disso, criamos variáveis novas (feature engineering) como risco histórico por cargo e por setor, diferença de idade em relação à média do setor, faixa etária crítica e sinalizadores de fim de trimestre.
+
+- **Modelo escolhido:** Ensemble por Soft Voting, combinando RandomForest com XGBoost otimizado por GridSearch, aplicado com corte de decisão (threshold) em 0.75.
+
+- **Por quê:** entre todos os modelos testados (RandomForest puro, XGBoost, XGBoost + SMOTE, XGBoost + GridSearch), essa combinação entregou o maior recall do projeto nesse ponto de corte (79,82%) mantendo a precisão acima de 50%, ou seja, captura a maioria dos casos reais de afastamento por saúde mental sem gerar excesso de alarmes falsos para o RH.
 
 ---
 
 ## Limitações
 A análise dos dados do INSS permite identificar onde os afastamentos por transtornos mentais se concentram, em quais setores e em quais grupos. Ela não permite, contudo, explicar o que ocorre dentro de cada organização, uma vez que dados administrativos não capturam percepção do ambiente de trabalho. O desdobramento natural desta pesquisa é a aplicação de um instrumento de clima organizacional nos setores identificados como prioritários, o que permitiria conectar o padrão macro observado às práticas concretas de cada empresa.
-
----
-
-##  Próximos Passos
-* [ ] **Fase 3: Feature Engineering** (Criação de flags de desconexão geográfica e categorização de risco).
-* [ ] **Fase 4: Modelagem Preditiva (Machine Learning)** para classificação de risco de afastamento.
-* [ ] **Fase 5: Visualização:** Construção dos filtros e gráficos no Streamlit consumindo o arquivo Parquet limpo  (MVP pronto: [Acesso aqui](https://burnout-system-fly.streamlit.app/)
 
 ---
 
@@ -119,7 +116,7 @@ Valdirene Pereira de Souza
 ## Como rodar
 1. Abra `notebook/01_analise_completa.ipynb` no Google Colab
 2. Rode as celulas de cima para baixo
-3. As bibliotecas estao em `requisitos.txt`
+3. As bibliotecas estao em `requirements.txt`
 
 ---
 
